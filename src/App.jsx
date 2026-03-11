@@ -12,6 +12,7 @@ function App() {
           Name: Vince Tupas <br />
           Email: bisnisyows@gmail.com <br />
           Section: INF231 <br />
+          <a href="git remote add origin https://github.com/binisyow/tupas-webprog.git">Github</a>
         </p>
       </header>
     </div>
