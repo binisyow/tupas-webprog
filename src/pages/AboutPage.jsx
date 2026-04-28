@@ -12,7 +12,7 @@ const AboutPage = () => {
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
           <div className="rounded-3xl border-2 border-zinc-700 bg-zinc-800 p-6 flex items-center justify-center">
             <img
-              src="https://images.filmibeat.com/ph-big/2026/03/biker-movie-trailer-launch1774238738_1.jpg"
+              src="https://images.fastcompany.com/image/upload/f_webp,q_auto,c_fit/fc/3047304-poster-p-1-poster-captures-the-strength-of-street-knowledge-in-black-and-white.jpg"
               alt="Profile Poster"
               className="w-25h-32rounded-full object-cover border-2 border-orange-400"
             />
@@ -109,10 +109,10 @@ const AboutPage = () => {
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               {[
-                'https://tse1.mm.bing.net/th/id/OIP.sF61YZRHN1R1gqZ0wGBeLAHaK9?rs=1&pid=ImgDetMain&o=7&rm=3',
-                'https://tse2.mm.bing.net/th/id/OIP.tIh2WpphTE2Msd_rqlHURQHaLQ?rs=1&pid=ImgDetMain&o=7&rm=3',
-                'https://tse1.mm.bing.net/th/id/OIP.eMc7Y1YhKH3y6u_kfNkijgHaKl?rs=1&pid=ImgDetMain&o=7&rm=3',
-                'https://tse4.mm.bing.net/th/id/OIP.AfZ1DOQ_eMzKgl3nn9IQ1wHaK0?rs=1&pid=ImgDetMain&o=7&rm=3',
+                'https://i.pinimg.com/1200x/95/f5/ab/95f5ab9aaab5b15b61165ec01500a772.jpg',
+                'https://i.pinimg.com/1200x/8e/bd/48/8ebd48f66f760c1066bb7f82204d8866.jpg',
+                'https://i.pinimg.com/736x/11/75/b5/1175b5b020ee694988ef85f529de6dcc.jpg',
+                'https://i.pinimg.com/1200x/3c/b4/28/3cb428f7b5e7246ee9c2727862e423e4.jpg',
               ].map((src, i) => (
                 <div key={i} className="flex aspect-square items-center justify-center rounded-[1.25rem] overflow-hidden">
                   <img src={src} alt={`Movie ${i+1}`} className="w-full h-full object-cover" />
