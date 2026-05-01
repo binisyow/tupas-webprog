@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/Button';
+import Button from '../../components/Button';
 
-const ArticlePage = () => {
+const ArticleListPage = () => {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const navigate = useNavigate();
 
@@ -220,4 +220,4 @@ const ArticlePage = () => {
   );
 };
 
-export default ArticlePage;
+export default ArticleListPage;

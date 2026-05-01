@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import Button from '../components/Button';
-import backgroundImage from '../assets/images/background.jpg';
+import Button from '../../components/Button';
+import backgroundImage from '../../assets/images/background.jpg';
 
 const HomePage = () => {
   // Authentication state
