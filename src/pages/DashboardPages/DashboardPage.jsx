@@ -21,10 +21,10 @@ const summaryCards = [
 ];
 
 const recentUsers = [
-  { name: 'Jon Snow', email: 'jon@example.com', status: 'Active' },
-  { name: 'Cersei Lannister', email: 'cersei@example.com', status: 'Review' },
-  { name: 'Arya Stark', email: 'arya@example.com', status: 'Active' },
-  { name: 'Daenerys Targaryen', email: 'daenerys@example.com', status: 'Active' },
+  { name: 'yoochae', email: 'yoonchae@example.com', status: 'Active' },
+  { name: 'sophia', email: 'sophia@example.com', status: 'Review' },
+  { name: 'megan', email: 'megan@example.com', status: 'Active' },
+  { name: 'manon', email: 'manon@example.com', status: 'Active' },
 ];
 
 const DashboardPage = () => {
