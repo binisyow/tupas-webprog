@@ -24,6 +24,12 @@ const rows = [
   { id: 4, report: 'Finance Review', category: 'Finance', generated: 'April' },
 ];
 
+const cardSx = {
+  bgcolor: '#222227',
+  border: '1px solid #3a3a42',
+  borderRadius: 3,
+};
+
 const ReportsPage = () => {
   const printRef = useRef(null);
 
@@ -102,7 +108,7 @@ const ReportsPage = () => {
       </Stack>
 
       <Stack ref={printRef} className="report-print-area" spacing={3}>
-        <Card sx={{ borderRadius: 3 }}>
+        <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" fontWeight={700} gutterBottom>
               Monthly Report Output
@@ -122,7 +128,7 @@ const ReportsPage = () => {
         </Card>
 
         <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3}>
-          <Card sx={{ flex: 1, borderRadius: 3 }}>
+          <Card sx={{ ...cardSx, flex: 1 }}>
             <CardContent>
               <Typography variant="h6" fontWeight={700} gutterBottom>
                 Report Category Share
@@ -146,7 +152,7 @@ const ReportsPage = () => {
             </CardContent>
           </Card>
 
-          <Card sx={{ flex: 1, borderRadius: 3 }}>
+          <Card sx={{ ...cardSx, flex: 1 }}>
             <CardContent>
               <Typography variant="h6" fontWeight={700} gutterBottom>
                 Completion Rate
@@ -159,7 +165,7 @@ const ReportsPage = () => {
           </Card>
         </Stack>
 
-        <Card sx={{ borderRadius: 3 }}>
+        <Card sx={cardSx}>
           <CardContent>
             <Typography variant="h6" fontWeight={700} gutterBottom>
               Generated Reports Table
@@ -171,6 +177,11 @@ const ReportsPage = () => {
                 initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
                 pageSizeOptions={[5]}
                 disableRowSelectionOnClick
+                sx={{
+                  border: '1px solid #3a3a42',
+                  '& .MuiDataGrid-cell': { borderColor: '#33333a' },
+                  '& .MuiDataGrid-footerContainer': { borderColor: '#33333a' },
+                }}
               />
             </Box>
           </CardContent>

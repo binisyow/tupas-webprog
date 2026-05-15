@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -25,6 +25,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { DataGrid } from '@mui/x-data-grid';
 import usersSeed from '../../data/users.json';
+import { createUser, fetchUsers, updateUser } from '../../services/UserService';
 
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
@@ -46,27 +47,33 @@ const blankForm = {
 const labelize = (value) =>
   value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
 
-const loadUsers = () =>
-  usersSeed.map((user, index) => ({
-    id: index + 1,
-    firstName: String(user.firstName ?? '').trim(),
-    lastName: String(user.lastName ?? '').trim(),
-    age: String(user.age ?? '').trim(),
-    gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
-      ? String(user.gender).trim().toLowerCase()
-      : '',
-    contactNumber: String(user.contactNumber ?? '').trim(),
-    email: String(user.email ?? '').trim(),
-    role: roles.includes(String(user.role ?? '').trim().toLowerCase())
-      ? String(user.role).trim().toLowerCase()
-      : 'viewer',
-    username: String(user.username ?? '').trim(),
-    password: String(user.password ?? '').trim(),
-    address: String(user.address ?? '').trim(),
-    isActive: typeof user.isActive === 'boolean' ? user.isActive : true,
-  }));
+const normalizeUser = (user, index = 0) => ({
+  id: user._id || user.id || index + 1,
+  _id: user._id,
+  firstName: String(user.firstName ?? '').trim(),
+  lastName: String(user.lastName ?? '').trim(),
+  age: String(user.age ?? '').trim(),
+  gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
+    ? String(user.gender).trim().toLowerCase()
+    : '',
+  contactNumber: String(user.contactNumber ?? '').trim(),
+  email: String(user.email ?? '').trim(),
+  role: roles.includes(String(user.role ?? '').trim().toLowerCase())
+    ? String(user.role).trim().toLowerCase()
+    : 'viewer',
+  username: String(user.username ?? '').trim(),
+  password: '',
+  address: String(user.address ?? '').trim(),
+  isActive: typeof user.isActive === 'boolean' ? user.isActive : true,
+});
 
-const seed = loadUsers();
+const seed = usersSeed.map((user, index) => normalizeUser(user, index));
+
+const panelSx = {
+  bgcolor: '#222227',
+  border: '1px solid #3a3a42',
+  borderRadius: 3,
+};
 
 const UsersPage = () => {
   const theme = useTheme();
@@ -80,6 +87,25 @@ const UsersPage = () => {
   const [form, setForm] = useState(blankForm);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadApiUsers = async () => {
+      setLoading(true);
+      try {
+        const { data } = await fetchUsers();
+        setUsers(data.map((user, index) => normalizeUser(user, index)));
+        setMessage('');
+      } catch {
+        setMessage('Using local user data because the API is not available.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadApiUsers();
+  }, []);
 
   const filteredUsers = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
@@ -111,7 +137,8 @@ const UsersPage = () => {
     if (!form.email.trim()) nextErrors.email = 'Email is required.';
     if (!form.username.trim()) nextErrors.username = 'Username is required.';
     if (/\s/.test(form.username)) nextErrors.username = 'Username must not contain spaces.';
-    if (form.password.length < 8) nextErrors.password = 'Password must be at least 8 characters.';
+    if (!editingId && form.password.length < 8) nextErrors.password = 'Password must be at least 8 characters.';
+    if (editingId && form.password && form.password.length < 8) nextErrors.password = 'Password must be at least 8 characters.';
     if (!form.gender) nextErrors.gender = 'Gender is required.';
     if (!form.role) nextErrors.role = 'Role is required.';
 
@@ -141,7 +168,24 @@ const UsersPage = () => {
     setOpen(true);
   };
 
-  const handleToggleStatus = (id) => {
+  const handleToggleStatus = async (id) => {
+    const selectedUser = users.find((user) => user.id === id);
+    if (selectedUser?._id) {
+      try {
+        const { data } = await updateUser(selectedUser._id, {
+          ...selectedUser,
+          isActive: !selectedUser.isActive,
+        });
+        const savedUser = normalizeUser(data);
+        setUsers((currentUsers) =>
+          currentUsers.map((user) => (user.id === id ? { ...savedUser, id } : user)),
+        );
+        return;
+      } catch (error) {
+        setMessage(error.response?.data?.message || 'Unable to update user status.');
+      }
+    }
+
     setUsers((currentUsers) =>
       currentUsers.map((user) =>
         user.id === id ? { ...user, isActive: !user.isActive } : user,
@@ -154,19 +198,31 @@ const UsersPage = () => {
     setForm((currentForm) => ({ ...currentForm, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
 
-    if (editingId) {
-      setUsers((currentUsers) =>
-        currentUsers.map((user) => (user.id === editingId ? { ...form, id: editingId } : user)),
-      );
-    } else {
-      const nextId = users.length ? Math.max(...users.map((user) => user.id)) + 1 : 1;
-      setUsers((currentUsers) => [...currentUsers, { ...form, id: nextId }]);
-    }
+    const payload = { ...form };
+    if (editingId && !payload.password) delete payload.password;
 
-    resetDialog();
+    try {
+      if (editingId) {
+        const apiId = form._id || editingId;
+        const { data } = await updateUser(apiId, payload);
+        const savedUser = normalizeUser(data);
+        setUsers((currentUsers) =>
+          currentUsers.map((user) => (user.id === editingId ? { ...savedUser, id: editingId } : user)),
+        );
+      } else {
+        const { data } = await createUser(payload);
+        const savedUser = normalizeUser(data, users.length);
+        setUsers((currentUsers) => [savedUser, ...currentUsers]);
+      }
+
+      resetDialog();
+      setMessage('');
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Unable to save user.');
+    }
   };
 
   const columns = [
@@ -244,7 +300,7 @@ const UsersPage = () => {
         </Button>
       </Stack>
 
-      <Paper sx={{ p: 2, mb: 2, borderRadius: 3 }}>
+      <Paper sx={{ ...panelSx, p: 2, mb: 2 }}>
         <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
           <TextField
             fullWidth
@@ -289,22 +345,27 @@ const UsersPage = () => {
         </Stack>
       </Paper>
 
-      <Paper sx={{ height: 560, width: '100%', borderRadius: 3 }}>
+      <Paper sx={{ ...panelSx, height: 560, width: '100%' }}>
         <DataGrid
           rows={filteredUsers}
           columns={columns}
           initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
           pageSizeOptions={[5, 10]}
           disableRowSelectionOnClick
-          sx={{ border: 0 }}
+          sx={{
+            border: 0,
+            '& .MuiDataGrid-cell': { borderColor: '#33333a' },
+            '& .MuiDataGrid-footerContainer': { borderColor: '#33333a' },
+          }}
         />
       </Paper>
 
       {!filteredUsers.length && (
         <Alert severity="info" sx={{ mt: 2 }}>
-          No users found. Adjust your search or filters, or add a new user record.
+          {loading ? 'Loading users...' : 'No users found. Adjust your search or filters, or add a new user record.'}
         </Alert>
       )}
+      {message && <Alert severity="warning" sx={{ mt: 2 }}>{message}</Alert>}
 
       <Dialog open={open} onClose={resetDialog} fullWidth maxWidth="md">
         <DialogTitle>{editingId ? 'Edit User' : 'Add User'}</DialogTitle>

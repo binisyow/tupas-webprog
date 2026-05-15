@@ -13,11 +13,17 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 
+const cardSx = {
+  bgcolor: '#222227',
+  border: '1px solid #3a3a42',
+  borderRadius: 3,
+};
+
 const summaryCards = [
-  { label: 'Total Users', value: '1,248', icon: GroupsIcon, color: '#1976d2' },
+  { label: 'Total Users', value: '1,248', icon: GroupsIcon, color: '#ff6b00' },
   { label: 'Movies Posted', value: '86', icon: MovieIcon, color: '#f97316' },
-  { label: 'Monthly Views', value: '24.8K', icon: VisibilityIcon, color: '#16a34a' },
-  { label: 'Growth Rate', value: '+18%', icon: TrendingUpIcon, color: '#7c3aed' },
+  { label: 'Monthly Views', value: '24.8K', icon: VisibilityIcon, color: '#ff8a1f' },
+  { label: 'Growth Rate', value: '+18%', icon: TrendingUpIcon, color: '#c2410c' },
 ];
 
 const recentUsers = [
@@ -40,32 +46,36 @@ const DashboardPage = () => {
       </Box>
 
       <Grid container spacing={2}>
-        {summaryCards.map(({ label, value, icon: Icon, color }) => (
-          <Grid key={label} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Card sx={{ height: '100%', borderRadius: 3 }}>
-              <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Avatar sx={{ bgcolor: color }}>
-                    <Icon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" fontWeight={800}>
-                      {value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {label}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+        {summaryCards.map((card) => {
+          const IconComponent = card.icon;
+
+          return (
+            <Grid key={card.label} size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Card sx={{ ...cardSx, height: '100%' }}>
+                <CardContent>
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    <Avatar sx={{ bgcolor: card.color }}>
+                      <IconComponent />
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h5" fontWeight={800}>
+                        {card.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.label}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
       </Grid>
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          <Card sx={{ borderRadius: 3 }}>
+          <Card sx={cardSx}>
             <CardContent>
               <Typography variant="h6" fontWeight={700} gutterBottom>
                 Quarterly Activity
@@ -82,7 +92,7 @@ const DashboardPage = () => {
           </Card>
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Card sx={{ borderRadius: 3, height: '100%' }}>
+          <Card sx={{ ...cardSx, height: '100%' }}>
             <CardContent>
               <Typography variant="h6" fontWeight={700} gutterBottom>
                 Content Split
@@ -104,7 +114,7 @@ const DashboardPage = () => {
         </Grid>
       </Grid>
 
-      <Card sx={{ borderRadius: 3 }}>
+      <Card sx={cardSx}>
         <CardContent>
           <Typography variant="h6" fontWeight={700} gutterBottom>
             Recent Users
@@ -116,7 +126,7 @@ const DashboardPage = () => {
                 direction={{ xs: 'column', sm: 'row' }}
                 justifyContent="space-between"
                 spacing={1}
-                sx={{ borderBottom: '1px solid #e2e8f0', pb: 1.5 }}
+                sx={{ borderBottom: '1px solid #3a3a42', pb: 1.5 }}
               >
                 <Box>
                   <Typography fontWeight={700}>{user.name}</Typography>

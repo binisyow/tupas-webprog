@@ -1,0 +1,14 @@
+How to run Lab Activity 7
+
+1. Open MongoDB Compass or make sure MongoDB service is running.
+2. From this root folder, run:
+   npm.cmd run dev
+3. Or run separately:
+   npm.cmd run dev:server
+   npm.cmd run dev:client
+4. Open:
+   http://127.0.0.1:5173
+
+Default dashboard accounts:
+Admin: admin@tupas.dev / Admin123!
+Editor: editor@tupas.dev / Editor123!
