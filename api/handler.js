@@ -22,31 +22,36 @@ app.use(
   }),
 );
 
-// Health check
-app.get('/', (req, res) => {
+// Health check (Vercel routes everything under /api to this function)
+const healthCheck = (req, res) => {
   res.json({ message: 'Tupas Lab Activity 7 API is running' });
-});
+};
+app.get('/', healthCheck);
+app.get('/api', healthCheck);
 
-// Initialize database once per serverless instance
-let dbInitialized = false;
+// Ensure the database is connected (and seeded) before handling API requests.
+// connectDB caches the connection, so this is cheap after the first call.
+let seeded = false;
 
 app.use(async (req, res, next) => {
-  if (!dbInitialized) {
-    try {
-      await connectDB();
+  try {
+    await connectDB();
+    if (!seeded) {
       await seedDatabase();
-      dbInitialized = true;
-      console.log('Database initialized');
-    } catch (error) {
-      console.error('Database initialization error:', error);
+      seeded = true;
     }
+    next();
+  } catch (error) {
+    console.error('Database initialization error:', error);
+    res.status(503).json({
+      message: 'Database connection failed. Check MONGO_URI and MongoDB Atlas network access.',
+    });
   }
-  next();
 });
 
-// Routes
-app.use('/users', userRoutes);
-app.use('/articles', articleRoutes);
+// Routes (requests arrive prefixed with /api on Vercel)
+app.use('/api/users', userRoutes);
+app.use('/api/articles', articleRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
