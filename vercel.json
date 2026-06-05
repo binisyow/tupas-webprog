@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd tupas-client && npm run build",
+  "outputDirectory": "tupas-client/dist",
+  "installCommand": "npm install && cd tupas-client && npm install && cd ../tupas-server && npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}

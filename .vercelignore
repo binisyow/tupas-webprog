@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+.env.example
+DEPLOYMENT_GUIDE.md
+logs/
+.vercel/
+.DS_Store

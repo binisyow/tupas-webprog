@@ -7,5 +7,8 @@
     "dev:server": "cd tupas-server && npm.cmd run dev",
     "dev:client": "cd tupas-client && npm.cmd run dev -- --host 127.0.0.1",
     "build": "cd tupas-client && npm.cmd run build"
+  },
+  "dependencies": {
+    "mongodb": "^7.2.0"
   }
 }
